@@ -1,0 +1,15 @@
+COMPILER := gcc
+SRC      := %.c 
+OBJ      := %.o
+CFLAGS   := -Wall -c -pedantic  -g
+DELETE   := rm
+LIBS     := -lm  
+all: pdcc
+%.c: 
+	$(COMPLER) $(CFLAGS) $< 
+pdcc:
+	$(COMPILER) $(OBJ)  $(LIBS) -o pdcc
+
+clean:
+	$(DELETE) *.o
+	$(DELETE) pdcc
