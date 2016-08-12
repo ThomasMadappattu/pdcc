@@ -349,6 +349,13 @@ int check_valid_identifier(char *id)
    return TRUE;
 }
 
+/*
+ *   function : print_lex_error_info
+ *   description: dumps current buffer
+ *
+ *
+ */
+
 void print_lex_error_info()
 {
    int last_index = ( current_index + 80 ) >  __pdcc__lex_current_file.file_size-1 ? __pdcc__lex_current_file.file_size-1 - current_index: 80;
@@ -473,7 +480,7 @@ void  get_token(TOKEN_T *token, TOKEN_VALUE_T *val)
           val->float_value = double_value;
           printf("\n  get_current_char(number_index) = %c" ,get_current_char(number_index));  
           count = 0 ; 
-           printf("\n Float Value = %f " , double_value) ;      
+          printf("\n Float Value = %f " , double_value) ;      
           if (get_current_char(number_index) == '.')
           {
             printf("iniside point");                                  

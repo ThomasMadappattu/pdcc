@@ -71,4 +71,6 @@ extern SYMBOL_T *allocate_symbol();
 extern void insert_symbol(SYMBOL_T *sym , int type);
 extern void dump_symbol_table(LIST_T table);
 extern void dump_globals();
+extern void setup_sym_tables();
+
 #endif

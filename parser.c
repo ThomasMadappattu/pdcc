@@ -583,8 +583,10 @@ int parse_atom(TOKEN_T *tok , TOKEN_VALUE_T *val , AST_T *ast)
 
    }
    *ast = ret_ast;
-   printf(" Token = %s " , tok->token);    
-  
+   
+   #ifdef DEBUG 
+      printf(" Token = %s " , tok->token);    
+   #endif 
    /*
    skip_blanks();
    if (match("id"))
@@ -630,7 +632,11 @@ int declare_local(int typ,SYMBOL_T *otag)
 void get_ident_type(TOKEN_T *token , TOKEN_VALUE_T *val , SYMBOL_T *sym);
 void parse_type_decl(TOKEN_T *token, TOKEN_VALUE_T *val, SYMBOL_T *sym)
 {
-            printf("\n On Declation token = %s " ,token->token);
+            
+
+            #ifdef DEBUG 
+                 printf("\n On Declation token = %s " ,token->token);            
+            #endif 
             if(token->type == INT)
             {   
                        sym->type = INT;

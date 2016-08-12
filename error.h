@@ -9,4 +9,7 @@ prints warning message and continue
 */
 extern void print_warning(char *msg);
 
+
+#define DEBUG          
+
 #endif 
