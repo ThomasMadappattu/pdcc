@@ -1,12 +1,12 @@
 /*
 ***********************************************************************
 
-    PDCC -- Public Domain C compiler , All rights waived 
+    PDCC -- Public Domain C compiler , All rights waived
     written by Thomas Madappattu
-    lex.c implements the lexical analyzer for the c compiler. 
+    lex.c implements the lexical analyzer for the c compiler.
     The main duty of the lexical analyzer is to split the stream of
     text into a set of tokens so that they can be dealt with more
-    easily.     
+    easily.
 ***********************************************************************
 */
 #include "io.h"
@@ -15,23 +15,23 @@
 #include <math.h>
 #include <stdlib.h>
 #include "lex.h"
-#include "error.h" 
-#include "symtab.h" 
+#include "error.h"
+#include "symtab.h"
 
 static FILE_T __pdcc__lex_current_file;
 
-static int current_index = 0 ; 
-LIST_T string_liternal_list; 
+static int current_index = 0 ;
+LIST_T string_liternal_list;
 /*
 **********************************************************************************************
-Set of keywords defined by the compiler 
+Set of keywords defined by the compiler
 **********************************************************************************************
 */
 
-TOKEN_T keywords[] = { 
-                        { INT64  ,"__int64"} , 
+TOKEN_T keywords[] = {
+                        { INT64  ,"__int64"} ,
                         { AUTO  ,  "auto"  } ,
-                        { ASM  , "asm"     } , 
+                        { ASM  , "asm"     } ,
                         { BREAK ,  "break" } ,
                         { CASE  ,  "case"  },
                         { CHAR  , "char "  },
@@ -64,7 +64,7 @@ TOKEN_T keywords[] = {
                         { VOLATILE ,"volatile" },
                         { WHILE ,    "while" }
                   };
- /* operators defined by the language */                 
+ /* operators defined by the language */
  TOKEN_T  operators[]= {
                               { SHIFT_LEFT_EQUAL , "<<=" },
                               { SHIFT_RIGHT_EQUAL , ">>="},
@@ -111,7 +111,7 @@ TOKEN_T keywords[] = {
                               { LEFT_PAR , "("},
                               { RIGHT_PAR , ")" },
                               { SEMICOLON , ";"},
-                              
+
 
                        };
 
@@ -149,19 +149,19 @@ int is_operator( char *str , TOKEN_T *tok)
     int count = 0 ;
     for ( count = 0 ; count < TOTAL_OPERATORS ; count++)
     {
-       if( strcmp(str , operators[count].token) == 0 ) 
+       if( strcmp(str , operators[count].token) == 0 )
        {
           tok = (operators+count);
-          return TRUE; 
+          return TRUE;
        }
     }
-    return FALSE;     
+    return FALSE;
 
 }
 void init_token(TOKEN_T *token)
 {
-  token->token=NULL ; 
-  token->type = NIL_TOKEN; 
+  token->token=NULL ;
+  token->type = NIL_TOKEN;
 }
 
 /* initializes the lexer with the given filename */
@@ -179,7 +179,7 @@ void skip_blanks()
    char ch=  get_char_from_file(&__pdcc__lex_current_file,current_index);
    while (!end_of_file() &&( isspace(ch) || ch == 0 ))
    {
-         
+
       ++current_index;
       ch=  get_char_from_file(&__pdcc__lex_current_file,current_index);
    }
@@ -254,7 +254,7 @@ void advance_lex(int advance_count)
    }
 }
 /*
-  returns true if lex has reached the end of the file. 
+  returns true if lex has reached the end of the file.
 */
 
 int end_of_file()
@@ -321,7 +321,7 @@ int  match_advance(char *str )
    return FALSE ;
 }
 /*
- * retunrs true if id is a valid identifier
+ * returns true if id is a valid identifier
  */
 int check_valid_identifier(char *id)
 {
@@ -359,11 +359,11 @@ int check_valid_identifier(char *id)
 void print_lex_error_info()
 {
    int last_index = ( current_index + 80 ) >  __pdcc__lex_current_file.file_size-1 ? __pdcc__lex_current_file.file_size-1 - current_index: 80;
-   int counter = 0 ; 
+   int counter = 0 ;
    for ( counter = 0 ; counter < last_index ; counter ++)
    {
-      fputc(get_current_char(counter),stderr);       
-   }         
+      fputc(get_current_char(counter),stderr);
+   }
 
 }
 
@@ -378,14 +378,14 @@ description:
 */
 void  get_token(TOKEN_T *token, TOKEN_VALUE_T *val)
 {
-  int count = 0 ; 
+  int count = 0 ;
   int string_length = 0 ;
   int number_length = 0 ;
-  char current_char ;   
+  char current_char ;
   long integer_value =  0;
   float double_value = 0.00f ;
-  float exp_value = 10.0f ; 
-  int number_index = 0 ; 
+  float exp_value = 10.0f ;
+  int number_index = 0 ;
   skip_blanks();
   skip_comments();
   /* first match for operators */
@@ -393,11 +393,11 @@ void  get_token(TOKEN_T *token, TOKEN_VALUE_T *val)
   {
      if ( match_advance(operators[count].token))
      {
-       token->type = operators[count].type; 
-       token->token=operators[count].token; 
+       token->type = operators[count].type;
+       token->token=operators[count].token;
        return;
      }
-  }  
+  }
   /* if no match of operators were found , match for keyords */
   for ( count = 0 ; count < TOTAL_KEYWORDS; count++)
   {
@@ -405,149 +405,149 @@ void  get_token(TOKEN_T *token, TOKEN_VALUE_T *val)
      {
         token->type = keywords[count].type;
         token->token= keywords[count].token;
-        return; 
-     }  
-  } 
-  current_char = get_current_char(0); 
-  /*scan for numbers and get the number */ 
+        return;
+     }
+  }
+  current_char = get_current_char(0);
+  /*scan for numbers and get the number */
   if ( isdigit(current_char))
   {
-       /* number scanning code , hex */ 
+       /* number scanning code , hex */
        if(match("0x"))
        {
-          number_index += 2 ; 
+          number_index += 2 ;
           number_length += 2 ;
           current_char = get_current_char(number_index);
-          current_char = tolower(current_char); 
-          count = 0 ; 
+          current_char = tolower(current_char);
+          count = 0 ;
           while(isdigit(current_char) || current_char <= 'z' || current_char >= 'a' )
           {
-             current_char = get_current_char(number_index) ; 
+             current_char = get_current_char(number_index) ;
              integer_value += ascii_to_int(current_char) * ((long)pow(16 , count++)) ;
-             ++number_index; 
-             ++number_length;                              
-          } 
+             ++number_index;
+             ++number_length;
+          }
           token->type = HEX_NUMBER ;
-          val->int_value  = integer_value;  
+          val->int_value  = integer_value;
        }
        else if (get_current_char(number_index) == '0' )
        {
-          ++number_index;   
+          ++number_index;
           number_length += 1 ;
           current_char = get_current_char(number_index);
           current_char = tolower(current_char);
-          count = 0 ;  
+          count = 0 ;
           while(isdigit(current_char) && current_char < '8' )
           {
-             current_char = get_current_char(number_index) ; 
+             current_char = get_current_char(number_index) ;
              integer_value = ascii_to_int(current_char) * ((long)pow(8 , count++)) ;
              ++number_index;
-             ++number_length;                              
-          } 
-          token->type = OCT_NUMBER ; 
-          val->int_value  = integer_value;  
+             ++number_length;
+          }
+          token->type = OCT_NUMBER ;
+          val->int_value  = integer_value;
        }
        else
        {
-          count = 0 ; 
+          count = 0 ;
           current_char = get_current_char(number_index);
-          current_char = tolower(current_char); 
+          current_char = tolower(current_char);
           while(isdigit(current_char)  )
           {
-             ++number_index; 
-             ++number_length;  
-            
-             
-             if ( number_index == 1 ) 
+             ++number_index;
+             ++number_length;
+
+
+             if ( number_index == 1 )
              {
-                  double_value = ascii_to_int(current_char) ; 
-                  integer_value =  ascii_to_int(current_char); 
+                  double_value = ascii_to_int(current_char) ;
+                  integer_value =  ascii_to_int(current_char);
              }
-             else 
+             else
              {
-                double_value *=  10.00f; 
+                double_value *=  10.00f;
                 double_value +=   ascii_to_int(current_char);
                 integer_value *= 10;
-	        integer_value +=   ascii_to_int(current_char);   	
-                
-             } 
+	        integer_value +=   ascii_to_int(current_char);
+
+             }
              current_char = get_current_char(number_index) ;
              ++count;
-                                        
-          } 
+
+          }
           token->type = INT_NUMBER;
-	  val->int_value = integer_value; 
+	      val->int_value = integer_value;
           val->float_value = double_value;
-          printf("\n  get_current_char(number_index) = %c" ,get_current_char(number_index));  
-          count = 0 ; 
-          printf("\n Float Value = %f " , double_value) ;      
+          printf("\n  get_current_char(number_index) = %c" ,get_current_char(number_index));
+          count = 0 ;
+          printf("\n Float Value = %f " , double_value) ;
           if (get_current_char(number_index) == '.')
           {
-            printf("iniside point");                                  
-            ++number_index; 
-            ++number_length; 
-            
-            current_char = get_current_char(number_index); 
+            printf("inside point");
+            ++number_index;
+            ++number_length;
+
+            current_char = get_current_char(number_index);
             while(isdigit(current_char)  )
             {
-              ++number_index; 
+              ++number_index;
               ++number_length;
-              
-              
+
+
               double_value +=   ascii_to_int(current_char) *pow( 0.1 , ++count)  ;
-              current_char = get_current_char(number_index) ;                                     
+              current_char = get_current_char(number_index) ;
             }
-             token->type = FLOAT_NUMBER; 
+             token->type = FLOAT_NUMBER;
              val->float_value = double_value;
-             printf("\n Float Value = %f " , double_value) ;         
+             printf("\n Float Value = %f " , double_value) ;
           }
-          if (tolower(get_current_char(number_index)) == 'e' ) 
+          if (tolower(get_current_char(number_index)) == 'e' )
           {
-            ++number_index; 
-            current_char = get_current_char(number_index); 
+            ++number_index;
+            current_char = get_current_char(number_index);
             if ( current_char == '-')
             {
                exp_value = 0.1;
-               advance_lex(1); 
+               advance_lex(1);
             }
-            count = 0 ; 
+            count = 0 ;
             while(isdigit(current_char)  )
             {
-              current_char = get_current_char(++number_index) ; 
-              double_value += ascii_to_int(current_char) * exp_value; 
+              current_char = get_current_char(++number_index) ;
+              double_value += ascii_to_int(current_char) * exp_value;
               ++number_index;
-              ++number_length;                              
-            } 
-            token->type = FLOAT_NUMBER; 
-            val->float_value = double_value;        
+              ++number_length;
+            }
+            token->type = FLOAT_NUMBER;
+            val->float_value = double_value;
           }
-          
-       
-      
+
+
+
        if(strchr("uU" , get_current_char(number_index)))
        {
-          ++number_length ; 
-          ++number_index; 
-          
+          ++number_length ;
+          ++number_index;
+
        }
        if(strchr("lL" , get_current_char(number_index)))
        {
-          ++number_length ; 
-          ++number_index ; 
-          
+          ++number_length ;
+          ++number_index ;
+
        }
-       
+
       token->token= malloc(sizeof(char) * number_length+1);
       for(count = 0 ; count < number_length ; count++)
       {
          token->token[count] = get_current_char(count);
-      }        
-      token->token[count] ='\0'; 
-      advance_lex(number_length); 
-      return;  
+      }
+      token->token[count] ='\0';
+      advance_lex(number_length);
+      return;
     }
   }
-  /* scan for string literals */ 
+  /* scan for string literals */
   if (get_current_char(0) == '"' )
   {
     while(get_current_char(1+string_length) != '"' && get_current_char(string_length) != '\\')
@@ -556,21 +556,21 @@ void  get_token(TOKEN_T *token, TOKEN_VALUE_T *val)
         {
             exit_error("Unexpected end of file , while fetching a string liternal ");
         }
-        ++string_length ; 
+        ++string_length ;
     }
-    token->type = STRING ; 
+    token->type = STRING ;
     token->token = malloc(sizeof(char) * (string_length+1));
-    advance_lex(1); 
+    advance_lex(1);
     for (count = 0 ;  count < string_length ; count++)
     {
        token->token[count] = get_current_char(count);
-       
+
     }
-    advance_lex(string_length+1); 
-    token->token[count] = '\0' ; 
-    return ; 
-  } 
-  /* scan for character constants */ 
+    advance_lex(string_length+1);
+    token->token[count] = '\0' ;
+    return ;
+  }
+  /* scan for character constants */
   if (get_current_char(0) == '\'' )
   {
     while(get_current_char(1+string_length) != '\'' && get_current_char(string_length) != '\\')
@@ -579,46 +579,46 @@ void  get_token(TOKEN_T *token, TOKEN_VALUE_T *val)
         {
             exit_error("Unexpected end of file , while fetching a string liternal ");
         }
-        ++string_length ; 
+        ++string_length ;
     }
-    token->type = CHAR_CONST; 
+    token->type = CHAR_CONST;
     token->token = malloc(sizeof(char ) *(string_length+1));
-    advance_lex(1); 
+    advance_lex(1);
     for (count = 0 ;  count < string_length ; count++)
     {
        token->token[count] = get_current_char(count);
-       
+
     }
-    advance_lex(string_length+1); 
-    token->token[count] = '\0'; 
-    return ; 
-  }  
+    advance_lex(string_length+1);
+    token->token[count] = '\0';
+    return ;
+  }
   count = 0 ;
-  string_length = 0 ;  
-  /* none of the above gave a match , so it must be an identifier */ 
+  string_length = 0 ;
+  /* none of the above gave a match , so it must be an identifier */
   while( !isspace(get_current_char(count)) && !end_of_file()&&!strchr("<>|&^%~\"'!,.-+/?=;[]{}*()",get_current_char(count)))
   {
      ++string_length;
      ++count;
   }
-  
-  token->type = IDENTIFIER ; 
-  token->token = malloc(sizeof(char) * (string_length +1 ));      
-  for( count = 0 ; count < string_length ; count++) 
+
+  token->type = IDENTIFIER ;
+  token->token = malloc(sizeof(char) * (string_length +1 ));
+  for( count = 0 ; count < string_length ; count++)
   {
-    token->token[count] = get_current_char(count); 
+    token->token[count] = get_current_char(count);
   }
-  advance_lex(string_length); 
-  token->token[count] ='\0'; 
+  advance_lex(string_length);
+  token->token[count] ='\0';
   if(strlen(token->token) == 0 )
   {
      token->type = NIL_TOKEN;
-     
+
   }
- 
-  /* skip space */ 
-  skip_blanks(); 
-  skip_comments(); 
+
+  /* skip space */
+  skip_blanks();
+  skip_comments();
 }
 /*
 *******************************************************************
@@ -627,8 +627,8 @@ Backtrack to previous token value
 */
 void backtrack(TOKEN_T tok)
 {
-  advance_lex(-1 * strlen(tok.token)); 
-} 
+  advance_lex(-1 * strlen(tok.token));
+}
 /*
 *******************************************************************
 convert ascii value to integer value
@@ -642,11 +642,11 @@ long  ascii_to_int(char ascii)
    }
    if ( ascii >= 'A' && ascii <= 'Z')
    {
-     return ascii - 'A' + 10 ; 
+     return ascii - 'A' + 10 ;
    }
    if ( ascii >= 'a' && ascii <= 'z')
    {
-      return ascii-'a' + 10 ; 
+      return ascii-'a' + 10 ;
    }
-   return 0; 
+   return 0;
 }

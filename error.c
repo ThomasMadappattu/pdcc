@@ -5,40 +5,39 @@
 
 
 /*
- ******************************************************
-procedure exit_error                    
-   prints an error messages msg on the   
-   sreen and exits the compiler program 
-inputs :                               
-    char *msg - the message to be displ 
-                ayed                    
- outputs:                               
-   prints error messge , program exits    
-*******************************************************
+
+Function: exit_error
+   prints an error messages msg on the
+   screen and exits the compiler program
+Parameters:
+    char *msg - the message to be displ
+                ayed
+Returns:
+   None
+
 */
 void exit_error( char *msg)
 {
     fprintf(stderr," \n %s \n", msg);
-    print_lex_error_info(); 
-    fprintf(stderr,"\n");  
-    exit(EXIT_FAILURE) ;      
+    print_lex_error_info();
+    fprintf(stderr,"\n");
+    exit(EXIT_FAILURE) ;
 }
 /*
-*******************************************************
-procedure print_warning                 
+Function: print_warning
    prints warning messages on the screen
-inputs :                                
-    char *msg - the message to be displ 
-                ayed                    
- outputs:                               
-    prints some info to erro device       
-******************************************************  
+
+Parameters:
+    char *msg - the message to be displ
+                ayed
+Returns:
+    None
 */
 void print_warning( char *msg)
 {
    fprintf(stderr,"%s",msg);
-   fprintf(stderr, "\n ");  
-   print_lex_error_info(); 
-   fprintf(stderr,"\n");     
+   fprintf(stderr, "\n ");
+   print_lex_error_info();
+   fprintf(stderr,"\n");
 }
 

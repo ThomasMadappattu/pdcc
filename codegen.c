@@ -1,14 +1,16 @@
 #include "codegen.h"
-#include <string.h> 
+#include <string.h>
 
-static FILE* __current_file = NULL; 
-static char __comment_start = ';' ; 
+#define MAX_LABEL_LEN 100
+
+static FILE* __current_file = NULL;
+static char __comment_start = ';' ;
 static int __pdcc_internal_label_count  = 0 ;
 static char *__label_prefix = "__pdcc_label";
-char label_string[100];
+char label_string[MAX_LABEL_LEN];
 
 /*
-   generates a label with a given prefix 
+   generates a label with a given prefix
 */
 char* gen_label( char *prefix)
 {
@@ -21,14 +23,14 @@ char* gen_label( char *prefix)
          strcpy(new_label,__label_prefix);
          strcat(new_label,"1");
          __label_prefix = new_label;
-         __pdcc_internal_label_count = 0 ;       
-  }  
-  ++__pdcc_internal_label_count;  
-    
+         __pdcc_internal_label_count = 0 ;
+  }
+  ++__pdcc_internal_label_count;
+
   return label_string;
 }
 /*
- * intializes the code generator module 
+ * initialize the code generator module
  */
 void init_codegen( char* filename)
 {
@@ -37,7 +39,7 @@ void init_codegen( char* filename)
     fclose(__current_file);
   }
   printf(" Output File = %s", filename);
-  __current_file =  fopen(filename,"w"); 
+  __current_file =  fopen(filename,"w");
   printf(" After fopen output file = %s" , filename);
   if ( __current_file  == NULL )
   {
@@ -47,17 +49,17 @@ void init_codegen( char* filename)
 
 }
 /*
- *  write a comment into the file 
+ *  write a comment into the file
  */
 
 void write_comment(char *str)
 {
   fprintf(__current_file,"\n %c %s ", __comment_start , str );
-  fflush(__current_file); 
+  fflush(__current_file);
 
 }
 /*
- *  write  a  source line into the file 
+ *  write  a  source line into the file
  */
 void write_line(char *str)
 {
@@ -67,7 +69,7 @@ void write_line(char *str)
 /* write a string without a newline delimiter */
 void write_string ( char *str )
 {
-   fprintf(__current_file,"%s" , str ) ; 
+   fprintf(__current_file,"%s" , str ) ;
    fflush(__current_file);
 }
 /* write a numnber given the number */
@@ -79,7 +81,7 @@ void write_number ( int num )
 /* write a number in hex to  the file */
 void write_number_hex( int num )
 {
-   fprintf( __current_file, "%x " , num ) ; 
+   fprintf( __current_file, "%x " , num ) ;
    fflush(__current_file);
 }
 /* print a label to the file*/
@@ -88,29 +90,29 @@ void write_label(char *str)
    write_line(str);
    write_string(":");
 }
-/*  
- *   shut the code geneator
+/*
+ *   shut the code generator
  */
 void shut_codegen()
 {
-  if( __current_file != NULL ) 
-  { 
-    fflush(__current_file); 
-    fclose(__current_file); 
+  if( __current_file != NULL )
+  {
+    fflush(__current_file);
+    fclose(__current_file);
   }
   __current_file = NULL;
 }
 /*
- *  Shut the code generator down 
+ *  Shut the code generator down
  */
 void put_char(char ch)
 {
    fprintf(__current_file,"%c",ch);
-   fflush(__current_file); 
-} 
+   fflush(__current_file);
+}
 
-void set_comment_char ( char comment_char ) 
+void set_comment_char ( char comment_char )
 {
-   __comment_start = comment_char ; 
+   __comment_start = comment_char ;
 
 }
